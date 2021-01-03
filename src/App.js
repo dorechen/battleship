@@ -2,11 +2,17 @@ import React from "react";
 import logo from "./logo.svg";
 import { Counter } from "./features/counter/Counter";
 import "./App.css";
-import {
-  generateRandShipPoint,
-  hasSpaceForShipOnBoard,
-  placeShip,
-} from "./util";
+import { generateRandShipPoints } from "./util";
+
+const hasCollision = (shipsArray, newShip) => {
+  if (shipsArray.length === 0) return false;
+  shipsArray.forEach((ship) =>
+    ship.forEach(({ y, x }) => {
+      if (x === newShip.x && y === newShip.y) return true;
+    })
+  );
+  return false;
+};
 
 const startgame = (boardSize = { y: 8, x: 8 }) => {
   const destroyer = { size: 2, key: "D" };
@@ -14,20 +20,24 @@ const startgame = (boardSize = { y: 8, x: 8 }) => {
   const battleship = { size: 4, key: "B" };
   const allShips = [battleship, cruiser, destroyer];
 
-  const board = Array.from(Array(boardSize.y), () => new Array(boardSize.x));
+  const shipPlacement = (allShips) => {
+    const shipArray = [];
 
-  const placeShipOnBoard = (board, { size, key }) => {
-    const isHorizontal = Math.random() < 0.5;
+    return allShips.map((ship) => {
+      let shipPoints = generateRandShipPoints(boardSize, ship);
+      while (hasCollision(shipArray, shipPoints))
+        shipPoints = generateRandShipPoints(boardSize, ship);
 
-    let shipStartPoint = generateRandShipPoint(boardSize, size);
-
-    while (!hasSpaceForShipOnBoard(board, shipStartPoint, isHorizontal, size))
-      shipStartPoint = generateRandShipPoint(boardSize, size);
-
-    placeShip(board, shipStartPoint, isHorizontal, { size, key });
+      return shipPoints;
+    });
   };
 
-  allShips.forEach((ship) => placeShipOnBoard(board, ship));
+  return shipPlacement(allShips);
+};
+
+const shoot = (target) => {
+  const { y, x } = target;
+  // TODO: return hit/miss, number of ships left/not yet sunk, updated board
 };
 
 function App() {

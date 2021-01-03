@@ -1,39 +1,26 @@
-export const generateRandShipPoint = (boardSize, size) => [
-  Math.floor(Math.random() * (boardSize.y - (size - 1))),
-  Math.floor(Math.random() * (boardSize.x - (size - 1))),
-];
-
-export const hasSpaceForShipOnBoard = (
-  board,
-  shipStartPoint,
-  isHorizontal,
-  size
-) => {
-  let count = 0;
-  while (count < size) {
+export const generateRandShipPoints = (boardSize, { size, key }) => {
+  const startPoint = [
+    Math.floor(Math.random() * (boardSize.y - (size - 1))),
+    Math.floor(Math.random() * (boardSize.x - (size - 1))),
+  ];
+  const isHorizontal = Math.random() < 0.5;
+  const placement = [];
+  for (let i = 0; i < size; i++) {
     if (isHorizontal) {
-      if (board[shipStartPoint[0]][shipStartPoint[1] + count]) return false;
+      placement.push({
+        y: startPoint[0],
+        x: startPoint[1] + i,
+        key,
+        isHit: false,
+      });
     } else {
-      if (board[shipStartPoint[0] + count][shipStartPoint[1]]) return false;
+      placement.push({
+        y: startPoint[0] + i,
+        x: startPoint[1],
+        key,
+        isHit: false,
+      });
     }
-    count++;
   }
-  return true;
-};
-
-export const placeShip = (
-  board,
-  shipStartPoint,
-  isHorizontal,
-  { size, key }
-) => {
-  let count = 0;
-  while (count < size) {
-    if (isHorizontal) {
-      board[shipStartPoint[0]][shipStartPoint[1] + count] = key;
-    } else {
-      board[shipStartPoint[0] + count][shipStartPoint[1]] = key;
-    }
-    count++;
-  }
+  return placement;
 };
