@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { createShips, selectShips } from "./features/ship/shipsSlice";
 import logo from "./logo.svg";
-import { Counter } from "./features/counter/Counter";
 import "./App.css";
 import { generateRandShipPoints } from "./util";
 
@@ -35,58 +36,25 @@ const startgame = (boardSize = { y: 8, x: 8 }) => {
   return shipPlacement(allShips);
 };
 
-const shoot = (target) => {
+const shoot = (target, ships) => {
   const { y, x } = target;
+  const hasHit = () => {};
+  const hasSunkedShip = () => {};
   // TODO: return hit/miss, number of ships left/not yet sunk, updated board
 };
 
 function App() {
+  const ships = useSelector(selectShips);
+  const dispatch = useDispatch();
+  const [targetPoint, setTargetPoint] = useState("");
+
   return (
     <div className="App">
       <header className="App-header">
+        <button onClick={() => dispatch(createShips(startgame()))}>
+          NEW START
+        </button>
         <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
       </header>
     </div>
   );
