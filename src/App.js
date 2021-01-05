@@ -1,17 +1,14 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { createShips, selectShips } from "./features/ship/shipsSlice";
-import logo from "./logo.svg";
+import { isHit, createShips, selectShips } from "./features/ship/shipsSlice";
 import "./App.css";
-import { generateRandShipPoints } from "./util";
+import { generateRandShipPoints, inputToPoint } from "./util";
 
 const hasCollision = (shipsArray, newShip) => {
   if (shipsArray.length === 0) return false;
-  shipsArray.forEach((ship) =>
-    ship.forEach(({ y, x }) => {
-      if (x === newShip.x && y === newShip.y) return true;
-    })
-  );
+  shipsArray.forEach(({ y, x }) => {
+    if (x === newShip.x && y === newShip.y) return true;
+  });
   return false;
 };
 
@@ -21,26 +18,32 @@ const startgame = (boardSize = { y: 8, x: 8 }) => {
   const battleship = { size: 4, key: "B" };
   const allShips = [battleship, cruiser, destroyer];
 
-  const shipPlacement = (allShips) => {
-    const shipArray = [];
-
-    return allShips.map((ship) => {
+  const shipArray = [];
+  const shipPlacement = (allShips) =>
+    allShips.forEach((ship) => {
       let shipPoints = generateRandShipPoints(boardSize, ship);
       while (hasCollision(shipArray, shipPoints))
         shipPoints = generateRandShipPoints(boardSize, ship);
 
-      return shipPoints;
+      shipArray.push(...shipPoints);
     });
-  };
 
-  return shipPlacement(allShips);
+  shipPlacement(allShips);
+  return shipArray;
 };
 
-const shoot = (target, ships) => {
+const shoot = (target, ships, dispatch) => {
   const { y, x } = target;
-  const hasHit = () => {};
-  const hasSunkedShip = () => {};
-  // TODO: return hit/miss, number of ships left/not yet sunk, updated board
+  const hit = ships.find((point) => point.y === y && point.x === x);
+  let shipIsSunk = false;
+  if (hit) {
+    const ship = ships
+      .filter(({ key }) => key === hit.key)
+      .filter(({ y, x, isHit }) => !isHit && !(hit.y === y && hit.x === x));
+    shipIsSunk = ship.length === 0;
+    dispatch(isHit(hit));
+  }
+  return { hit, shipIsSunk };
 };
 
 function App() {
@@ -50,12 +53,27 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <button onClick={() => dispatch(createShips(startgame()))}>
-          NEW START
-        </button>
-        <img src={logo} className="App-logo" alt="logo" />
-      </header>
+      <button onClick={() => dispatch(createShips(startgame()))}>
+        Start New Game
+      </button>
+      <body className="App-body">
+        {ships.length > 0 ? (
+          <>
+            <input
+              placeholder={targetPoint || "input target"}
+              value={targetPoint}
+              onChange={(e) => setTargetPoint(e.target.value)}
+            />
+            <button
+              onClick={() => shoot(inputToPoint(targetPoint), ships, dispatch)}
+            >
+              Shoot Target
+            </button>
+          </>
+        ) : (
+          <></>
+        )}
+      </body>
     </div>
   );
 }

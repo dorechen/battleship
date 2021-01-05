@@ -1,7 +1,7 @@
 export const generateRandShipPoints = (boardSize, { size, key }) => {
   const startPoint = [
-    Math.floor(Math.random() * (boardSize.y - (size - 1))),
-    Math.floor(Math.random() * (boardSize.x - (size - 1))),
+    Math.floor(1 + Math.random() * (boardSize.y - size)),
+    Math.floor(1 + Math.random() * (boardSize.x - size)),
   ];
   const isHorizontal = Math.random() < 0.5;
   const placement = [];
@@ -23,4 +23,10 @@ export const generateRandShipPoints = (boardSize, { size, key }) => {
     }
   }
   return placement;
+};
+
+export const inputToPoint = (target) => {
+  const array = target.split("");
+  // TODO: include calculating letters to number point
+  return { y: parseInt(array[0]), x: parseInt(array[1]) };
 };

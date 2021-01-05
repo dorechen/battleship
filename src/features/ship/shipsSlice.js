@@ -4,12 +4,18 @@ export const shipsSlice = createSlice({
   name: "ships",
   initialState: {
     ships: [],
+    shipsLeft: 0,
   },
   reducers: {
     isHit: (state, action) => {
-      state.ships.find((s) => s.key === action.payload.key).isHit = true;
+      const { payload } = action;
+      const shipToUpdate = state.ships.find(
+        ({ y, x }) => y === payload.y && x === payload.x
+      );
+      shipToUpdate.isHit = true;
     },
     createShips: (state, action) => {
+      // TODO: update shipsLeft
       state.ships = action.payload;
     },
   },
