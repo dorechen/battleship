@@ -43,20 +43,32 @@ const shoot = (target, ships, dispatch) => {
     shipIsSunk = ship.length === 0;
     dispatch(isHit(hit));
   }
-  return { hit, shipIsSunk };
+  return { target, hit, shipIsSunk };
+};
+
+const generateGameMessage = (lastMove) => {
+  const { target, hit, shipIsSunk } = lastMove;
+  let message = `You target ${target.target}. `;
+  if (hit) message = message + "You hit! ";
+  else message = message + "You missed. ";
+  if (shipIsSunk) message = message + "You have sunk a ship! ";
+  //  TODO: "there are # ships left"
+
+  return message;
 };
 
 function App() {
   const ships = useSelector(selectShips);
   const dispatch = useDispatch();
   const [targetPoint, setTargetPoint] = useState("");
+  const [lastMove, setLastMove] = useState("");
 
   return (
     <div className="App">
       <button onClick={() => dispatch(createShips(startgame()))}>
         Start New Game
       </button>
-      <body className="App-body">
+      <div className="game-body">
         {ships.length > 0 ? (
           <>
             <input
@@ -65,15 +77,18 @@ function App() {
               onChange={(e) => setTargetPoint(e.target.value)}
             />
             <button
-              onClick={() => shoot(inputToPoint(targetPoint), ships, dispatch)}
+              onClick={() =>
+                setLastMove(shoot(inputToPoint(targetPoint), ships, dispatch))
+              }
             >
               Shoot Target
             </button>
+            <div>{lastMove && generateGameMessage(lastMove)}</div>
           </>
         ) : (
           <></>
         )}
-      </body>
+      </div>
     </div>
   );
 }

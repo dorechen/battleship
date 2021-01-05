@@ -28,5 +28,5 @@ export const generateRandShipPoints = (boardSize, { size, key }) => {
 export const inputToPoint = (target) => {
   const array = target.split("");
   // TODO: include calculating letters to number point
-  return { y: parseInt(array[0]), x: parseInt(array[1]) };
+  return { target, y: parseInt(array[0]), x: parseInt(array[1]) };
 };
