@@ -26,7 +26,9 @@ export const generateRandShipPoints = (boardSize, { size, key }) => {
 };
 
 export const inputToPoint = (target) => {
+  const yLookup = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];
   const array = target.split("");
-  // TODO: include calculating letters to number point
-  return { target, y: parseInt(array[0]), x: parseInt(array[1]) };
+  const y = parseInt(yLookup.indexOf(array[0].toUpperCase()));
+  const x = parseInt(array[1]) - 1;
+  return { target: target.toUpperCase(), y, x };
 };

@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { isHit, createShips, selectShips } from "./features/ship/shipsSlice";
+import {
+  isHit,
+  isMiss,
+  createGame,
+  selectShips,
+  selectBoard,
+} from "./features/ship/shipsSlice";
 import "./App.css";
 import { generateRandShipPoints, inputToPoint } from "./util";
 
@@ -42,7 +48,7 @@ const shoot = (target, ships, dispatch) => {
       .filter(({ y, x, isHit }) => !isHit && !(hit.y === y && hit.x === x));
     shipIsSunk = ship.length === 0;
     dispatch(isHit(hit));
-  }
+  } else dispatch(isMiss(target));
   return { target, hit, shipIsSunk };
 };
 
@@ -51,21 +57,49 @@ const generateGameMessage = (lastMove) => {
   let message = `You target ${target.target}. `;
   if (hit) message = message + "You hit! ";
   else message = message + "You missed. ";
-  if (shipIsSunk) message = message + "You have sunk a ship! ";
+  if (shipIsSunk) message = message + "A ship is sunk! ";
   //  TODO: "there are # ships left"
 
   return message;
 };
 
+const renderBoard = (a) => {
+  const column = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];
+  return (
+    <div>
+      <table>
+        <thead>
+          <tr>
+            {["-", 1, 2, 3, 4, 5, 6, 7, 8].map((item, index) => (
+              <th>{item}</th>
+            ))}
+          </tr>
+        </thead>{" "}
+        <tbody>
+          {a.map((item, index) => (
+            <tr>
+              <td>{column[index]}</td>
+              {item.map((i) => (
+                <td>{i}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
 function App() {
   const ships = useSelector(selectShips);
+  const board = useSelector(selectBoard);
   const dispatch = useDispatch();
   const [targetPoint, setTargetPoint] = useState("");
   const [lastMove, setLastMove] = useState("");
 
   return (
     <div className="App">
-      <button onClick={() => dispatch(createShips(startgame()))}>
+      <button onClick={() => dispatch(createGame(startgame()))}>
         Start New Game
       </button>
       <div className="game-body">
@@ -88,6 +122,7 @@ function App() {
         ) : (
           <></>
         )}
+        <div>{board && renderBoard(board)}</div>
       </div>
     </div>
   );
