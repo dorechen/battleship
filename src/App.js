@@ -47,13 +47,38 @@ const shoot = (target, ships, dispatch) => {
 
 const generateGameMessage = (lastMove, shipsLeft) => {
   const { target, hit, shipIsSunk } = lastMove;
-  let message = `You target ${target.target}. `;
-  if (hit) message = message + "You hit! ";
-  else message = message + "You missed. ";
-  if (shipIsSunk) message = message + "A ship is sunk! ";
-  message = message + `There are ${shipsLeft} ships remaining.`;
+  const shipName = [
+    { key: "D", name: "destroyer" },
+    { key: "C", name: "cruiser" },
+    { key: "B", name: "battleship" },
+  ];
 
-  return message;
+  return (
+    <>
+      <div>
+        <b>{`Ships left: `}</b>
+        {shipsLeft}
+      </div>
+      <div>
+        <b>{`Last move: `}</b>
+        {lastMove ? `${target.target}` : ""}
+      </div>
+      <div>
+        {lastMove
+          ? `${hit ? "Hit!" : "Miss."}${
+              shipIsSunk
+                ? ` You have sunk a ${
+                    shipName.find((s) => s.key === hit.key).name
+                  }!`
+                : ""
+            }`
+          : ""}
+      </div>
+      {!shipsLeft && (
+        <div>You've won! Click "Start New Game" to play again.</div>
+      )}
+    </>
+  );
 };
 
 const renderBoard = (board) => {
@@ -93,25 +118,36 @@ function App() {
 
   return (
     <div className="App">
-      <button onClick={() => dispatch(createGame(startgame()))}>
+      <button
+        onClick={() => {
+          dispatch(createGame(startgame()));
+          setLastMove("");
+        }}
+      >
         Start New Game
       </button>
       <div className="game-body">
         {ships.length > 0 ? (
           <>
-            <input
-              placeholder={targetPoint || "input target"}
-              value={targetPoint}
-              onChange={(e) => setTargetPoint(e.target.value)}
-            />
-            <button
-              onClick={() =>
-                setLastMove(shoot(inputToPoint(targetPoint), ships, dispatch))
-              }
-            >
-              Shoot Target
-            </button>
-            <div>{lastMove && generateGameMessage(lastMove, shipsLeft)}</div>
+            {!!shipsLeft && (
+              <>
+                <input
+                  placeholder={targetPoint || "input target"}
+                  value={targetPoint}
+                  onChange={(e) => setTargetPoint(e.target.value)}
+                />
+                <button
+                  onClick={() =>
+                    setLastMove(
+                      shoot(inputToPoint(targetPoint), ships, dispatch)
+                    )
+                  }
+                >
+                  Shoot Target
+                </button>
+              </>
+            )}
+            <div>{generateGameMessage(lastMove, shipsLeft)}</div>
           </>
         ) : (
           <></>
