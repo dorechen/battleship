@@ -8,15 +8,7 @@ import {
   selectBoard,
 } from "./features/ship/shipsSlice";
 import "./App.css";
-import { generateRandShipPoints, inputToPoint } from "./util";
-
-const hasCollision = (shipsArray, newShip) => {
-  if (shipsArray.length === 0) return false;
-  shipsArray.forEach(({ y, x }) => {
-    if (x === newShip.x && y === newShip.y) return true;
-  });
-  return false;
-};
+import { generateRandShipPoints, hasCollision, inputToPoint } from "./util";
 
 const startgame = (boardSize = { y: 8, x: 8 }) => {
   const destroyer = { size: 2, key: "D" };
@@ -52,18 +44,18 @@ const shoot = (target, ships, dispatch) => {
   return { target, hit, shipIsSunk };
 };
 
-const generateGameMessage = (lastMove) => {
+const generateGameMessage = (lastMove, shipsLeft) => {
   const { target, hit, shipIsSunk } = lastMove;
   let message = `You target ${target.target}. `;
   if (hit) message = message + "You hit! ";
   else message = message + "You missed. ";
   if (shipIsSunk) message = message + "A ship is sunk! ";
-  //  TODO: "there are # ships left"
+  message = message + `There are ${shipsLeft} ships remaining.`;
 
   return message;
 };
 
-const renderBoard = (a) => {
+const renderBoard = (board) => {
   const column = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];
   return (
     <div>
@@ -76,7 +68,7 @@ const renderBoard = (a) => {
           </tr>
         </thead>{" "}
         <tbody>
-          {a.map((item, index) => (
+          {board.map((item, index) => (
             <tr>
               <td>{column[index]}</td>
               {item.map((i) => (

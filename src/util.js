@@ -25,6 +25,15 @@ export const generateRandShipPoints = (boardSize, { size, key }) => {
   return placement;
 };
 
+export const hasCollision = (shipsArray, newShip) => {
+  if (shipsArray.length === 0) return false;
+  for (let i = 0; i < shipsArray.length; i++)
+    for (let j = 0; j < newShip.length; j++)
+      if (shipsArray[i].x === newShip[j].x && shipsArray[i].y === newShip[j].y)
+        return true;
+  return false;
+};
+
 export const inputToPoint = (target) => {
   const yLookup = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];
   const array = target.split("");
