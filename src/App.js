@@ -5,6 +5,7 @@ import {
   isMiss,
   createGame,
   selectShips,
+  selectShipsLeft,
   selectBoard,
 } from "./features/ship/shipsSlice";
 import "./App.css";
@@ -84,6 +85,7 @@ const renderBoard = (board) => {
 
 function App() {
   const ships = useSelector(selectShips);
+  const shipsLeft = useSelector(selectShipsLeft);
   const board = useSelector(selectBoard);
   const dispatch = useDispatch();
   const [targetPoint, setTargetPoint] = useState("");
@@ -109,7 +111,7 @@ function App() {
             >
               Shoot Target
             </button>
-            <div>{lastMove && generateGameMessage(lastMove)}</div>
+            <div>{lastMove && generateGameMessage(lastMove, shipsLeft)}</div>
           </>
         ) : (
           <></>

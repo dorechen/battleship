@@ -15,6 +15,9 @@ export const shipsSlice = createSlice({
       );
       shipToUpdate.isHit = true;
       state.board[y][x] = "x";
+      state.shipsLeft = [
+        ...new Set(state.ships.filter((s) => !s.isHit).map((s) => s.key)),
+      ].length;
     },
     isMiss: (state, action) => {
       const { y, x } = action.payload;
@@ -24,7 +27,7 @@ export const shipsSlice = createSlice({
       // TODO: be able to change board size
       state.board = Array.from(Array(8), () => new Array(8).fill("-"));
       state.ships = action.payload;
-      // TODO: update shipsLeft
+      state.shipsLeft = [...new Set(action.payload.map((s) => s.key))].length;
     },
   },
 });
@@ -32,6 +35,7 @@ export const shipsSlice = createSlice({
 export const { isHit, isMiss, createGame } = shipsSlice.actions;
 
 export const selectShips = (state) => state.ships.ships;
+export const selectShipsLeft = (state) => state.ships.shipsLeft;
 export const selectBoard = (state) => state.ships.board;
 
 export default shipsSlice.reducer;
