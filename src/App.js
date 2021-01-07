@@ -134,6 +134,7 @@ function App() {
                 <input
                   placeholder={targetPoint || "input target"}
                   value={targetPoint}
+                  onClick={(e) => e.target.select()}
                   onChange={(e) => setTargetPoint(e.target.value)}
                 />
                 <button
