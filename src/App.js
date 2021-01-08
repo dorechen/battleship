@@ -9,7 +9,7 @@ import {
   selectBoard,
 } from "./features/ship/shipsSlice";
 import "./App.css";
-import { generateRandShipPoints, hasCollision, inputToPoint } from "./util";
+import { generateRandShipPoints, hasCollision } from "./util";
 
 const startgame = (boardSize = { y: 8, x: 8 }) => {
   const destroyer = { size: 2, key: "D" };
@@ -81,38 +81,13 @@ const generateGameMessage = (lastMove, shipsLeft) => {
   );
 };
 
-const renderBoard = (board) => {
-  const column = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];
-  return (
-    <table>
-      <thead>
-        <tr>
-          {["-", 1, 2, 3, 4, 5, 6, 7, 8].map((item, index) => (
-            <th>{item}</th>
-          ))}
-        </tr>
-      </thead>{" "}
-      <tbody>
-        {board.map((item, index) => (
-          <tr>
-            <td>{column[index]}</td>
-            {item.map((i) => (
-              <td>{i}</td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-};
-
 function App() {
   const ships = useSelector(selectShips);
   const shipsLeft = useSelector(selectShipsLeft);
   const board = useSelector(selectBoard);
   const dispatch = useDispatch();
-  const [targetPoint, setTargetPoint] = useState("");
   const [lastMove, setLastMove] = useState("");
+  const yLookup = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];
 
   return (
     <div className="App">
@@ -127,31 +102,49 @@ function App() {
       <div className="game-body">
         {ships.length > 0 ? (
           <>
-            {!!shipsLeft && (
-              <>
-                <input
-                  placeholder={targetPoint || "input target"}
-                  value={targetPoint}
-                  onClick={(e) => e.target.select()}
-                  onChange={(e) => setTargetPoint(e.target.value)}
-                />
-                <button
-                  onClick={() =>
-                    setLastMove(
-                      shoot(inputToPoint(targetPoint), ships, dispatch)
-                    )
-                  }
-                >
-                  Shoot Target
-                </button>
-              </>
-            )}
             <div>{generateGameMessage(lastMove, shipsLeft)}</div>
+
+            <table>
+              <thead>
+                <tr key="dl">
+                  {["-", 1, 2, 3, 4, 5, 6, 7, 8].map((item, index) => (
+                    <th key={`x-${index}`}>{item}</th>
+                  ))}
+                </tr>
+              </thead>{" "}
+              <tbody>
+                {board.map((item, yIndex) => (
+                  <tr key={`y-${yIndex}`}>
+                    <td key={`row-${yLookup[yIndex]}`}>{yLookup[yIndex]}</td>
+                    {item.map((i, xIndex) => (
+                      <td
+                        key={`${yIndex},${xIndex}`}
+                        onClick={() => {
+                          if (shipsLeft)
+                            setLastMove(
+                              shoot(
+                                {
+                                  target: `${yLookup[yIndex]}${xIndex + 1}`,
+                                  y: yIndex,
+                                  x: xIndex,
+                                },
+                                ships,
+                                dispatch
+                              )
+                            );
+                        }}
+                      >
+                        {i}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </>
         ) : (
           <></>
         )}
-        <div>{board && renderBoard(board)}</div>
       </div>
     </div>
   );

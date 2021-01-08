@@ -25,7 +25,7 @@ export const shipsSlice = createSlice({
     },
     createGame: (state, action) => {
       // TODO: be able to change board size
-      state.board = Array.from(Array(8), () => new Array(8).fill("-"));
+      state.board = Array.from(Array(8), () => new Array(8).fill(" "));
       state.ships = action.payload;
       state.shipsLeft = [...new Set(action.payload.map((s) => s.key))].length;
     },

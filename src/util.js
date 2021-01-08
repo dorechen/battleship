@@ -33,11 +33,3 @@ export const hasCollision = (shipsArray, newShip) => {
         return true;
   return false;
 };
-
-export const inputToPoint = (target) => {
-  const yLookup = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];
-  const array = target.split("");
-  const y = parseInt(yLookup.indexOf(array[0].toUpperCase()));
-  const x = parseInt(array[1]) - 1;
-  return { target: target.toUpperCase(), y, x };
-};
